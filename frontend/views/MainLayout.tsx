@@ -2,11 +2,10 @@ import { AppLayout } from '@hilla/react-components/AppLayout.js';
 import { Avatar } from '@hilla/react-components/Avatar.js';
 import { Button } from '@hilla/react-components/Button.js';
 import { DrawerToggle } from '@hilla/react-components/DrawerToggle.js';
-import { logout } from 'Frontend/auth.js';
+import { useAuth } from 'Frontend/util/auth.js';
 import Placeholder from 'Frontend/components/placeholder/Placeholder';
-import { AuthContext } from 'Frontend/useAuth.js';
 import { useRouteMetadata } from 'Frontend/util/routing';
-import { Suspense, useContext } from 'react';
+import { Suspense } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
 
 const navLinkClasses = ({ isActive }: any) => {
@@ -15,7 +14,12 @@ const navLinkClasses = ({ isActive }: any) => {
 
 export default function MainLayout() {
   const currentTitle = useRouteMetadata()?.title ?? 'My App';
-  const { state, unauthenticate } = useContext(AuthContext);
+  const { state, logout } = useAuth();
+
+  const profilePictureUrl = state.user && `data:image;base64,${btoa(
+    state.user.profilePicture.reduce((str, n) => str + String.fromCharCode((n + 256) % 256), '')
+  )}`;
+
   return (
     <AppLayout primarySection="drawer">
       <div slot="drawer" className="flex flex-col justify-between h-full p-m">
@@ -38,10 +42,10 @@ export default function MainLayout() {
           {state.user ? (
             <>
               <div className="flex items-center gap-s">
-                <Avatar theme="xsmall" img={state.user.profilePictureUrl} name={state.user.name} />
+                <Avatar theme="xsmall" img={profilePictureUrl} name={state.user.name} />
                 {state.user.name}
               </div>
-              <Button onClick={async () => logout(unauthenticate)}>Sign out</Button>
+              <Button onClick={logout}>Sign out</Button>
             </>
           ) : (
             <a href="/login">Sign in</a>

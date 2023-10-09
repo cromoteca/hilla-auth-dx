@@ -1,5 +1,4 @@
-import Placeholder from 'Frontend/components/placeholder/Placeholder.js';
-import AuthControl from 'Frontend/views/AuthControl.js';
+import { protectRoutes } from '@hilla/react-auth';
 import HelloWorldView from 'Frontend/views/helloworld/HelloWorldView.js';
 import LoginView from 'Frontend/views/login/LoginView.js';
 import MainLayout from 'Frontend/views/MainLayout.js';
@@ -8,13 +7,9 @@ import { createBrowserRouter, RouteObject } from 'react-router-dom';
 
 const AboutView = lazy(async () => import('Frontend/views/about/AboutView.js'));
 
-export const routes: RouteObject[] = [
+export const routes: RouteObject[] = protectRoutes([
   {
-    element: (
-      <AuthControl fallback={<Placeholder />}>
-        <MainLayout />
-      </AuthControl>
-    ),
+    element: <MainLayout />,
     handle: { title: 'Main' },
     children: [
       { path: '/', element: <HelloWorldView />, handle: { title: 'Hello World', requiresLogin: true } },
@@ -22,6 +17,6 @@ export const routes: RouteObject[] = [
     ],
   },
   { path: '/login', element: <LoginView /> },
-];
+]);
 
 export default createBrowserRouter(routes);
